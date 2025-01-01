@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Trends</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0e7ff;
+        }
+
+        .container {
+            text-align: center;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+
+        h6 {
+            font-size: 1rem;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 20px;
+            border: none;
+            border-radius: 12px;
+            background-color: #4f46e5;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+        }
+
+        button:hover {
+            background-color: #4338ca;
+            box-shadow: 0 6px 16px rgba(67, 56, 202, 0.5);
+        }
+
+        button:disabled {
+            background-color: #a5b4fc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .root {
+            margin-top: 40px;
+        }
+
+        p {
+            margin: 15px 0;
+            padding: 18px;
+            border-radius: 10px;
+            background: #f3f4f6;
+            color: #374151;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Get Trending Topics</h1>
+        <button id="scrapeButton">What's Trending</button>
+        <h6>Click the button to get trends</h6>
+        <div class="root"></div>
+    </div>
+    <script>
+        const button = document.getElementById("scrapeButton");
+        const rootDiv = document.querySelector(".root");
+
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            button.disabled = true;
+            button.textContent = "Scraping...";
+            rootDiv.innerHTML = "<p>Fetching the latest data...</p>";
+
+            try {
+                const response = await axios.get("/trends");
+                const data = response.data.data;
+                rootDiv.innerHTML = "";
+
+                if (data && data.trends) {
+                    data.trends.forEach(item => {
+                        const p = document.createElement("p");
+                        p.innerHTML = item;
+                        rootDiv.appendChild(p);
+                    });
+                    const time = document.createElement("p");
+                    time.innerHTML = `Scraped at: ${new Date(data.end).toLocaleTimeString()}`;
+                    rootDiv.appendChild(time);
+                } else {
+                    rootDiv.innerHTML = "<p>No trends found.</p>";
+                }
+            } catch (error) {
+                console.log("Error:", error.response?.data?.message);
+                rootDiv.innerHTML = "<p style='color: red;'>Failed to fetch data. Please try again.</p>";
+            } finally {
+                button.disabled = false;
+                button.textContent = "What's Trending";
+            }
+        });
+
+    </script>
+</body>
+
+</html>
