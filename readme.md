@@ -13,7 +13,7 @@
 ### Put your proxies in the file constants/data.js
 
 ### use node app.js
-### Open the url http://localhost:<port>
+### Open the url http://localhost:port
 ### Click on the button to fetch the trends.
 
 
